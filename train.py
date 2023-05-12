@@ -45,9 +45,9 @@ train_dataset=CustomDatset(args.path_tar,'train',resize=args.configs.IMAGE_RESIZ
 val_dataset=CustomDatset(args.path_tar,'val',resize=args.configs.IMAGE_RESIZE)
 # Create the data loaders
 train_loader = DataLoader(train_dataset, batch_size=args.configs.TRAIN.BATCH_SIZE_PER_GPU,
-                          shuffle=True, num_workers=4)
+                          shuffle=True, num_workers=args.WORKERS)
 val_loader = DataLoader(val_dataset, batch_size=args.configs.TRAIN.BATCH_SIZE_PER_GPU,
-                        shuffle=False, num_workers=4)
+                        shuffle=False, num_workers=args.WORKERS)
 
 # Set up the device
 device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
