@@ -46,4 +46,18 @@ with torch.no_grad():
         all_targets.extend(targets.cpu().numpy())
         all_outputs.extend(predicted_labels.cpu().numpy())
 acc = accuracy_score(all_targets, all_outputs)
+def sensitive_score(label,predict):
+    success_cnt=0
+    ill_cnt=0
+    for i,j in zip(label,predict):
+        i,j=int(i),int(j)
+        if i>0:
+            ill_cnt+=1
+            if j>0:
+                success_cnt+=1 
+    return success_cnt/ill_cnt
+
 print(f"Finished testing! Test acc {acc:.4f}")
+# all_targets=all_targets.squeeze()
+# all_outputs=all_outputs.squeeze()
+print(f"all test {len(test_loader)} sens {(sensitive_score(all_targets,all_outputs)):.4f}")

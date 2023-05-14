@@ -27,18 +27,21 @@ if os.path.isfile(args.from_checkpoint):
     torch.load(args.from_checkpoint))
 
 # Creatr optimizer
-optimizer = get_optimizer(args.configs, model)
+# optimizer = get_optimizer(args.configs, model)
+# last_epoch = args.configs.TRAIN.BEGIN_EPOCH
+# if isinstance(args.configs.TRAIN.LR_STEP, list):
+#     lr_scheduler = torch.optim.lr_scheduler.MultiStepLR(
+#         optimizer, args.configs.TRAIN.LR_STEP,
+#         args.configs.TRAIN.LR_FACTOR, last_epoch-1
+#     )
+# else:
+#     lr_scheduler = torch.optim.lr_scheduler.StepLR(
+#         optimizer, args.configs.TRAIN.LR_STEP,
+#         args.configs.TRAIN.LR_FACTOR, last_epoch-1
+#     )
+from torch import optim
+optimizer=optim.Adam(model.parameters(),lr=0.0002)
 last_epoch = args.configs.TRAIN.BEGIN_EPOCH
-if isinstance(args.configs.TRAIN.LR_STEP, list):
-    lr_scheduler = torch.optim.lr_scheduler.MultiStepLR(
-        optimizer, args.configs.TRAIN.LR_STEP,
-        args.configs.TRAIN.LR_FACTOR, last_epoch-1
-    )
-else:
-    lr_scheduler = torch.optim.lr_scheduler.StepLR(
-        optimizer, args.configs.TRAIN.LR_STEP,
-        args.configs.TRAIN.LR_FACTOR, last_epoch-1
-    )
 
 # Load the datasets
 train_dataset=CustomDatset(args.path_tar,'train',resize=args.configs.IMAGE_RESIZE)
