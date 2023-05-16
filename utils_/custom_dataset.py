@@ -25,7 +25,7 @@ class crop_Dataset(data.Dataset):
 
         
         self.annotations = json.load(open(os.path.join(data_path, 
-                                                       'crop_ridge_annotations_baseline', f"{split}.json")))
+                                                       'annotations', f"{split}.json")))
         if split=="train" or split== "augument":
             self.img_transform=transforms.Compose([
                 ContrastEnhancement(),
