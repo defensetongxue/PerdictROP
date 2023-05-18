@@ -27,20 +27,21 @@ if os.path.isfile(args.from_checkpoint):
     torch.load(args.from_checkpoint))
 
 # Creatr optimizer
-# optimizer = get_optimizer(args.configs, model)
-# last_epoch = args.configs.TRAIN.BEGIN_EPOCH
-# if isinstance(args.configs.TRAIN.LR_STEP, list):
-#     lr_scheduler = torch.optim.lr_scheduler.MultiStepLR(
-#         optimizer, args.configs.TRAIN.LR_STEP,
-#         args.configs.TRAIN.LR_FACTOR, last_epoch-1
-#     )
-# else:
-#     lr_scheduler = torch.optim.lr_scheduler.StepLR(
-#         optimizer, args.configs.TRAIN.LR_STEP,
-#         args.configs.TRAIN.LR_FACTOR, last_epoch-1
-#     )
-from torch import optim
-optimizer=optim.Adam(model.parameters(),lr=0.0002)
+model.train()
+optimizer = get_optimizer(args.configs, model)
+last_epoch = args.configs.TRAIN.BEGIN_EPOCH
+if isinstance(args.configs.TRAIN.LR_STEP, list):
+    lr_scheduler = torch.optim.lr_scheduler.MultiStepLR(
+        optimizer, args.configs.TRAIN.LR_STEP,
+        args.configs.TRAIN.LR_FACTOR, last_epoch-1
+    )
+else:
+    lr_scheduler = torch.optim.lr_scheduler.StepLR(
+        optimizer, args.configs.TRAIN.LR_STEP,
+        args.configs.TRAIN.LR_FACTOR, last_epoch-1
+    )
+# from torch import optim
+# optimizer=optim.Adam(model.parameters(),lr=0.0002)
 last_epoch = args.configs.TRAIN.BEGIN_EPOCH
 
 # Load the datasets
@@ -64,11 +65,11 @@ total_epoches=args.configs.TRAIN.END_EPOCH
 # Training and validation loop
 for epoch in range(last_epoch,total_epoches):
     train_loss = train_epoch(model, optimizer, train_loader, criterion, device)
-    print(f"Epoch {epoch + 1}/{total_epoches}, Train Loss: {train_loss}")
-
+    lr_scheduler.step()
     val_loss = val_epoch(model, val_loader, criterion, device)
-    print(f"Epoch {epoch + 1}/{total_epoches}, Val Loss: {val_loss}")
-
+    print(f"Epoch {epoch + 1}/{total_epoches}, Train Loss: {train_loss:.6f},"
+          f" Val Loss: {val_loss:.6f}"
+          f" Lr: {optimizer.state_dict()['param_groups'][0]['lr']:.6f}")
     # Early stopping
     if val_loss < best_val_loss:
         best_val_loss = val_loss
