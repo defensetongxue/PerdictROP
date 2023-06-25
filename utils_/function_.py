@@ -2,7 +2,8 @@ import torch
 import inspect
 from torch import optim
 import numpy as np
-
+import seaborn as sns
+import matplotlib.pyplot as plt
 # def train_epoch(model, optimizer, train_loader, loss_function, device):
 #     model.train()
 #     running_loss = 0.0
@@ -124,3 +125,12 @@ def val_epoch(model, val_loader, loss_function, device):
     avg_loss = running_loss / len(val_loader)
 
     return avg_loss
+
+def plot_confusion_matrix(matrix, class_names, save_path):
+    plt.figure(figsize=(10,7))
+    sns.heatmap(matrix, annot=True, fmt='d', cmap='Blues',
+                xticklabels=class_names, yticklabels=class_names)
+    plt.xlabel('Predicted')
+    plt.ylabel('Actual')
+    plt.savefig(save_path, bbox_inches='tight')
+    plt.close()

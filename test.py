@@ -4,10 +4,12 @@ import torch
 from torch.utils.data import DataLoader
 from config import get_config
 from utils_ import crop_Dataset as CustomDatset
-from utils_ import get_instance
+from utils_ import get_instance,plot_confusion_matrix
 import models
-from sklearn.metrics import roc_auc_score, accuracy_score
-
+from sklearn.metrics import roc_auc_score, accuracy_score,confusion_matrix
+def get_matrix(label, predict):
+    matrix = confusion_matrix(label, predict)
+    return matrix
 # Parse arguments
 args = get_config()
 
@@ -34,7 +36,7 @@ test_loader = DataLoader(test_dataset, batch_size=1, shuffle=False)
 # Create the visualizations directory if it doesn't exist
 all_targets = []
 all_outputs = []
-
+name_list=[]
 with torch.no_grad():
     for inputs, targets, meta in test_loader:
         inputs = inputs.to(device)
@@ -45,19 +47,12 @@ with torch.no_grad():
         
         all_targets.extend(targets.cpu().numpy())
         all_outputs.extend(predicted_labels.cpu().numpy())
+        name_list.append(meta['image_name'])
 acc = accuracy_score(all_targets, all_outputs)
-def sensitive_score(label,predict):
-    success_cnt=0
-    ill_cnt=0
-    for i,j in zip(label,predict):
-        i,j=int(i),int(j)
-        if i>0:
-            ill_cnt+=1
-            if j>0:
-                success_cnt+=1 
-    return success_cnt/ill_cnt
-
+confusion_m=confusion_matrix(all_targets, all_outputs)
 print(f"Finished testing! Test acc {acc:.4f}")
-# all_targets=all_targets.squeeze()
-# all_outputs=all_outputs.squeeze()
-print(f"all test {len(test_loader)} sens {(sensitive_score(all_targets,all_outputs)):.4f}")
+print(f"all test {len(test_loader)}")
+plot_confusion_matrix(confusion_m,['0','No1','1','No2','2','No3','3'],'./tmp.png')
+f=open('./test_result.txt','w')
+for i in range(len(all_targets)):
+    f.write(f'T: {int(all_targets[i])}, P: {int(all_outputs[i])}, Image: {name_list[i]}\n')

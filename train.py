@@ -52,7 +52,8 @@ train_loader = DataLoader(train_dataset, batch_size=args.configs.TRAIN.BATCH_SIZ
                           shuffle=True, num_workers=args.configs.WORKERS)
 val_loader = DataLoader(val_dataset, batch_size=args.configs.TRAIN.BATCH_SIZE_PER_GPU,
                         shuffle=False, num_workers=args.configs.WORKERS)
-
+print(f"There is {args.configs.TRAIN.BATCH_SIZE_PER_GPU} patch size")
+print(f"Train: {len(train_loader)}, Val: {len(val_loader)}")
 # Set up the device
 device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 model = model.to(device)

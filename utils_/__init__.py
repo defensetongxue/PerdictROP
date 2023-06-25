@@ -1,2 +1,2 @@
-from .function_ import train_epoch,val_epoch,get_optimizer,get_instance
+from .function_ import train_epoch,val_epoch,get_optimizer,get_instance,plot_confusion_matrix
 from .custom_dataset import crop_Dataset
