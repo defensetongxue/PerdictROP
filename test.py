@@ -4,12 +4,10 @@ import torch
 from torch.utils.data import DataLoader
 from config import get_config
 from utils_ import crop_Dataset as CustomDatset
-from utils_ import get_instance,plot_confusion_matrix
+from utils_ import get_instance,acc,auc,auc_sens
 import models
-from sklearn.metrics import roc_auc_score, accuracy_score,confusion_matrix
-def get_matrix(label, predict):
-    matrix = confusion_matrix(label, predict)
-    return matrix
+import numpy as np
+
 # Parse arguments
 args = get_config()
 
@@ -37,6 +35,7 @@ test_loader = DataLoader(test_dataset, batch_size=1, shuffle=False)
 all_targets = []
 all_outputs = []
 name_list=[]
+all_scores =[]
 with torch.no_grad():
     for inputs, targets, meta in test_loader:
         inputs = inputs.to(device)
@@ -44,15 +43,16 @@ with torch.no_grad():
         outputs = model(inputs)
         probs = torch.softmax(outputs, dim=1)
         predicted_labels = torch.argmax(outputs, dim=1)
-        
+        all_scores.append(probs.detach().cpu())
         all_targets.extend(targets.cpu().numpy())
         all_outputs.extend(predicted_labels.cpu().numpy())
         name_list.append(meta['image_name'])
-acc = accuracy_score(all_targets, all_outputs)
-confusion_m=confusion_matrix(all_targets, all_outputs)
-print(f"Finished testing! Test acc {acc:.4f}")
-print(f"all test {len(test_loader)}")
-plot_confusion_matrix(confusion_m,['0','No1','1','No2','2','No3','3'],'./tmp.png')
-f=open('./test_result.txt','w')
-for i in range(len(all_targets)):
-    f.write(f'T: {int(all_targets[i])}, P: {int(all_outputs[i])}, Image: {name_list[i]}\n')
+
+all_targets=np.array(all_targets)
+all_outputs=np.array(all_outputs)
+all_scores=torch.cat(all_scores,dim=0).numpy()
+print("Finished testing!")
+print(f"acc: {acc(all_targets,all_outputs)} | auc: {auc(all_targets,all_scores)}")
+all_targets[all_targets>0]=1
+all_outputs[all_outputs>0]=1
+print(f"sens acc: {acc(all_targets,all_outputs)}| {auc_sens(all_targets,all_outputs)}" )

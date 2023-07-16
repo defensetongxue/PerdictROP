@@ -100,7 +100,7 @@ def get_config():
     
     # config file 
     parser.add_argument('--cfg', help='experiment configuration filename',
-                        default="./YAML/default.yaml", type=str)
+                        default="./YAML/inception.yaml", type=str)
     
     args = parser.parse_args()
     # Merge args and config file 

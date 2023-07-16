@@ -1,7 +1,7 @@
 import torch
 from torch.utils.data import DataLoader
 from config import get_config
-from utils_ import get_instance, train_epoch, val_epoch,get_optimizer,crop_Dataset as CustomDatset
+from utils_ import get_instance, get_optimizer,crop_Dataset as CustomDatset
 import models
 import os
 # Initialize the folder
@@ -20,7 +20,11 @@ print(f"the mid-result and the pytorch model will be stored in {result_path}")
 model = get_instance(models, args.configs.MODEL.NAME,args.configs,
                          num_classes=args.configs.NUM_CLASS)
 criterion=torch.nn.CrossEntropyLoss()
-
+if args.configs.MODEL.NAME=="VGG16":
+    from utils_ import train_epoch,val_epoch
+else:
+    from utils_ import train_epoch_inception as train_epoch
+    from utils_ import val_epoch_inception as val_epoch
 if os.path.isfile(args.from_checkpoint):
     print(f"loadding the exit checkpoints {args.from_checkpoint}")
     model.load_state_dict(
@@ -45,8 +49,8 @@ else:
 last_epoch = args.configs.TRAIN.BEGIN_EPOCH
 
 # Load the datasets
-train_dataset=CustomDatset(args.path_tar,'train',resize=args.configs.IMAGE_RESIZE)
-val_dataset=CustomDatset(args.path_tar,'val',resize=args.configs.IMAGE_RESIZE)
+train_dataset=CustomDatset(args.path_tar,'train')
+val_dataset=CustomDatset(args.path_tar,'val')
 # Create the data loaders
 train_loader = DataLoader(train_dataset, batch_size=args.configs.TRAIN.BATCH_SIZE_PER_GPU,
                           shuffle=True, num_workers=args.configs.WORKERS)

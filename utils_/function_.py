@@ -4,40 +4,40 @@ from torch import optim
 import numpy as np
 import seaborn as sns
 import matplotlib.pyplot as plt
-# def train_epoch(model, optimizer, train_loader, loss_function, device):
-#     model.train()
-#     running_loss = 0.0
+def train_epoch(model, optimizer, train_loader, loss_function, device):
+    model.train()
+    running_loss = 0.0
 
-#     for inputs, targets,meta in train_loader:
-#         inputs = inputs.to(device)
-#         targets = targets.to(device)
+    for inputs, targets,meta in train_loader:
+        inputs = inputs.to(device)
+        targets = targets.to(device)
 
-#         optimizer.zero_grad()
+        optimizer.zero_grad()
 
-#         outputs = model(inputs)
-#         loss = loss_function(outputs, targets)
+        outputs = model(inputs)
+        loss = loss_function(outputs, targets)
 
-#         loss.backward()
-#         optimizer.step()
+        loss.backward()
+        optimizer.step()
 
-#         running_loss += loss.item()
-#     return running_loss / len(train_loader)
+        running_loss += loss.item()
+    return running_loss / len(train_loader)
 
-# def val_epoch(model, val_loader, loss_function, device):
-#     model.eval()
-#     running_loss = 0.0
+def val_epoch(model, val_loader, loss_function, device):
+    model.eval()
+    running_loss = 0.0
 
-#     with torch.no_grad():
-#         for inputs, targets,meta in val_loader:
-#             inputs = inputs.to(device)
-#             targets = targets.to(device)
+    with torch.no_grad():
+        for inputs, targets,meta in val_loader:
+            inputs = inputs.to(device)
+            targets = targets.to(device)
 
-#             outputs = model(inputs)
-#             loss = loss_function(outputs, targets)
+            outputs = model(inputs)
+            loss = loss_function(outputs, targets)
 
-#             running_loss += loss.item()
+            running_loss += loss.item()
 
-#     return running_loss / len(val_loader)
+    return running_loss / len(val_loader)
 
 
 def get_instance(module, class_name, *args, **kwargs):
@@ -78,7 +78,7 @@ def get_optimizer(cfg, model):
     return optimizer
 
 
-def train_epoch(model, optimizer, train_loader, loss_function, device):
+def train_epoch_inception(model, optimizer, train_loader, loss_function, device):
     model.train()
     running_loss = 0.0
 
@@ -98,7 +98,7 @@ def train_epoch(model, optimizer, train_loader, loss_function, device):
         running_loss += loss.item()
     return running_loss / len(train_loader)
 
-def val_epoch(model, val_loader, loss_function, device):
+def val_epoch_inception(model, val_loader, loss_function, device):
     model.eval()
     running_loss = 0.0
     all_targets = []

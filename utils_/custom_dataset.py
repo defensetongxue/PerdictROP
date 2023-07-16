@@ -6,26 +6,11 @@ import torch
 from torchvision import transforms
 import json
 class crop_Dataset(data.Dataset):
-    '''
-        └───data
-            │
-            └───'crop_ridge_images'
-            │   │
-            │   └───001.jpg
-            │   └───002.jpg
-            │   └───...
-            │
-            └───'crop_ridge_annotations'
-                │
-                └───train.json
-                └───valid.json
-                └───test.json
-    '''
-    def __init__(self, data_path,split='train',resize=(800,800)):
+    def __init__(self, data_path,split='train',resize=(300,300)):
 
         
         self.annotations = json.load(open(os.path.join(data_path, 
-                                                       'tmp_annotations', f"{split}.json")))
+                                                       'annotations', f"{split}.json")))
         if split=="train" or split== "augument":
             self.img_transform=transforms.Compose([
                 ContrastEnhancement(),
